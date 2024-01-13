@@ -1,68 +1,169 @@
-import './Navbar.css'
-import {Link, useHistory} from 'react-router-dom'
-import {useDispatch, useSelector} from 'react-redux'
-import {useMemo} from 'react'
-import {logout} from '../utils/localstorage'
-import {setInitialState} from '../redux/actions/userAction'
+import styled from 'styled-components';
+import { Link, useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../utils/localstorage';
+import { setInitialState } from '../redux/actions/userAction';
 
-const Navbar = ({click}) => {
-  const cart = useSelector(state => state.cart)
-  const history = useHistory()
-  const user = useSelector(state => state.user)
-  const dispatch = useDispatch()
-  // console.log({user})
+const NavbarContainer = styled.nav`
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1.5rem 1rem;
+	z-index: 50;
+`;
 
-  const {cartItems} = cart
+const NavbarLogo = styled.div`
+	h2 {
+		font-size: 1.4rem;
+		cursor: pointer;
+	}
 
-  const getCartCount = () => {
-    return cartItems.reduce((qty, item) => Number(item.qty) + qty, 0)
-  }
+	@media (max-width: 500px) {
+		h2 {
+			font-size: 1rem;
+		}
+	}
+`;
 
-  const _handleLogout = () => {
-    // console.log('click')
-    dispatch(setInitialState())
-    logout()
-    history.push('/')
-  }
+const NavbarLinks = styled.ul`
+	display: flex;
+	list-style: none;
+	align-items: center;
 
-  return (
-    <nav className="navbar">
-      <div className="navbar__logo">
-        <h2>JSOM-E-COMERCE</h2>
-      </div>
+	@media (max-width: 960px) {
+		display: none;
+	}
 
-      <ul className="navbar__links">
-        <li>
-          <Link to="/cart" className="cart__link">
-            <i className="fas fa-shopping-cart"></i>
-            <span>
-              Cart <span className="cartlogo__badge">{getCartCount()}</span>
-            </span>
-          </Link>
-        </li>
+	li {
+		padding-left: 1.5rem;
 
-        <li>
-          <Link to="/">Shop</Link>
-        </li>
+		a {
+			text-decoration: none;
+			font-size: 1.2rem;
+			display: flex;
+			align-items: center;
 
-        {!user.userInfo.isLogin ? (
-          <li>
-            <Link to="/signin">Login</Link>
-          </li>
-        ) : (
-          <li>
-            <p onClick={_handleLogout}>Logout</p>
-          </li>
-        )}
-      </ul>
+			span {
+				display: flex;
+				align-items: center;
+				margin-left: 8px;
+			}
+		}
 
-      <div className="hamburger__menu" onClick={click}>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </nav>
-  )
-}
+		p {
+			text-decoration: none;
+			font-size: 1.2rem;
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+		}
+	}
+`;
 
-export default Navbar
+const CartLink = styled(Link)`
+	padding: 10px;
+	border-radius: 8px;
+
+	&:hover {
+		background: #dd219e;
+		color: #f4f4f4;
+	}
+`;
+
+const CartBadge = styled.span`
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	margin-left: 8px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 1rem;
+`;
+
+const HamburgerMenu = styled.div`
+	display: none;
+	width: 30px;
+	height: 30px;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	cursor: pointer;
+
+	&:hover > div {
+		background: #dd219e;
+	}
+
+	div {
+		width: 100%;
+		height: 3px;
+		background: #f4f4f4;
+	}
+
+	@media (max-width: 960px) {
+		display: flex;
+	}
+`;
+
+const Navbar = ({ click }) => {
+	const cart = useSelector((state) => state.cart);
+	const history = useHistory();
+	const user = useSelector((state) => state.user);
+	const dispatch = useDispatch();
+	// console.log({user})
+
+	const { cartItems } = cart;
+
+	const getCartCount = () => {
+		return cartItems.reduce((qty, item) => Number(item.qty) + qty, 0);
+	};
+
+	const _handleLogout = () => {
+		// console.log('click')
+		dispatch(setInitialState());
+		logout();
+		history.push('/');
+	};
+
+	return (
+		<NavbarContainer>
+			<NavbarLogo>
+				<h2>JSOM-E-COMERCE</h2>
+			</NavbarLogo>
+
+			<NavbarLinks>
+				<li>
+					<CartLink to='/cart'>
+						<i className='fas fa-shopping-cart'></i>
+						<span>
+							Cart <CartBadge>{getCartCount()}</CartBadge>
+						</span>
+					</CartLink>
+				</li>
+
+				<li>
+					<Link to='/'>Shop</Link>
+				</li>
+
+				{!user.userInfo.isLogin ? (
+					<li>
+						<Link to='/signin'>Login</Link>
+					</li>
+				) : (
+					<li>
+						<p onClick={_handleLogout}>Logout</p>
+					</li>
+				)}
+			</NavbarLinks>
+
+			<HamburgerMenu onClick={click}>
+				<div></div>
+				<div></div>
+				<div></div>
+			</HamburgerMenu>
+		</NavbarContainer>
+	);
+};
+
+export default Navbar;
